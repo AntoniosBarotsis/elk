@@ -1,0 +1,34 @@
+﻿version: "2.4"
+services:
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
+    container_name: es
+    ports:
+      - "9200:9200"
+    cpu_count: 1
+    mem_limit: 4g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    environment:
+      - cluster.name=es-docker
+      - cluster.initial_master_nodes=node1
+      - node.name=node1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+  kib:
+    image: docker.elastic.co/kibana/kibana:7.14.2
+    container_name: kib
+    ports:
+      - "5601:5601"
+    depends_on:
+      - es
+    cpu_count: 1
+    mem_limit: 4g
+    environment: 
+      ELASTICSEARCH_URL: http://es:9200
+      ELASTICSEARCH_HOSTS: http://es:9200
